@@ -59,3 +59,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         # Renombrar la clave 'access' a 'token'
         data['token'] = data.pop('access')
         return data
+
+class UserSerializerToken(serializers.ModelSerializer):
+    class Meta:
+        model = Usuario
+        fields = '__all__'  # Incluir todos los campos del modelo
