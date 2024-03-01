@@ -90,6 +90,7 @@ Para acceder a la documentación del API castilla: [http://127.0.0.1:8000/docs/]
 - **Estado de Insumos**
    - castilla/api/estadoinsumos/
    - castilla/api/estadoinsumos/<int:pk>/
+   - estadoinsumo/generate-pdf/
 - **Estado de Ordenes de Compra**
    - castilla/api/estadoocs/
    - castilla/api/estadoocs/<int:pk>/
