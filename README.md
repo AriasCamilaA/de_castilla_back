@@ -98,6 +98,7 @@ Para acceder a la documentación del API castilla: [http://127.0.0.1:8000/docs/]
 - **Estado de Pedidos**
    - castilla/api/estadopedidos/
    - castilla/api/estadopedidos/<int:pk>/
+   - estadopedidos/generate-pdf/
 - **Historicos**
    - castilla/api/historicos/
    - castilla/api/historicos/<int:pk>/
