@@ -70,6 +70,7 @@ Para acceder a la documentación del API castilla: [http://127.0.0.1:8000/docs/]
 - **Calificaciones**
    - castilla/api/calificaciones/
    - castilla/api/calificaciones/<int:pk>/
+   - calificaciones/generate-pdf
 - **Categorias**
    - castilla/api/categorias/
    - castilla/api/categorias/<int:pk>/
