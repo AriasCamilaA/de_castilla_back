@@ -78,6 +78,7 @@ Para acceder a la documentación del API castilla: [http://127.0.0.1:8000/docs/]
 - **Detalles Orden de Compra**
    - castilla/api/detalleocs/
    - castilla/api/detalleocs/<int:pk>/
+   - detalleocs/generate-pdf/
 - **Detalles de Pedidos**
    - castilla/api/detallepedidos/
    - castilla/api/detallepedidos/<int:pk>/
