@@ -129,6 +129,7 @@ Para acceder a la documentación del API castilla: [http://127.0.0.1:8000/docs/]
 - **Productos**
    - castilla/api/productos/
    - castilla/api/productos/<int:pk>/
+   - productos/generate-pdf/
 - **Proveedores**
    - castilla/api/proveedores/
    - castilla/api/proveedores/<int:pk>/
