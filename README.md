@@ -152,6 +152,7 @@ Para acceder a la documentación del API castilla: [http://127.0.0.1:8000/docs/]
 - **Usuarios**
    - castilla/api/usuarios/
    - castilla/api/usuarios/<int:pk>/
+   - usuarios/generate-pdf/
 - **Login**
    - castilla/api/login/ 
    - castilla/api/login/refresh/ 
@@ -159,7 +160,7 @@ Para acceder a la documentación del API castilla: [http://127.0.0.1:8000/docs/]
    - castilla/api/ventas/
    - castilla/api/ventas/<int:pk>/
    - ventas/generate-pdf/
-   
+
 
 
 
