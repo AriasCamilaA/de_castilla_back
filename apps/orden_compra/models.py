@@ -1,6 +1,7 @@
 from django.db import models
 from apps.estado_oc.models import EstadoOC
 
+
 class OrdenCompra(models.Model):
     id_oc = models.AutoField(primary_key=True)
     fecha_oc = models.DateField()
