@@ -110,6 +110,7 @@ Para acceder a la documentación del API castilla: [http://127.0.0.1:8000/docs/]
 - **Inventarios**
    - castilla/api/inventario/
    - castilla/api/inventario/<int:pk>/
+   - inventario/generate-pdf/
 - **Ordenes de Compra has Provedores**
    - castilla/api/ochasproveedores/
    - castilla/api/ochasproveedores/<int:pk>/
