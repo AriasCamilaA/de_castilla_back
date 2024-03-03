@@ -114,6 +114,7 @@ Para acceder a la documentación del API castilla: [http://127.0.0.1:8000/docs/]
 - **Ordenes de Compra has Provedores**
    - castilla/api/ochasproveedores/
    - castilla/api/ochasproveedores/<int:pk>/
+   - ochasproveedores/generate-pdf
 - **Ordenes de Compra**
    - castilla/api/ordencompras/
    - castilla/api/ordencompras/<int:pk>/
