@@ -70,12 +70,15 @@ Para acceder a la documentación del API castilla: [http://127.0.0.1:8000/docs/]
 - **Calificaciones**
    - castilla/api/calificaciones/
    - castilla/api/calificaciones/<int:pk>/
+   - calificaciones/generate-pdf
 - **Categorias**
    - castilla/api/categorias/
    - castilla/api/categorias/<int:pk>/
+   - categorias/generate-pdf/
 - **Detalles Orden de Compra**
    - castilla/api/detalleocs/
    - castilla/api/detalleocs/<int:pk>/
+   - detalleocs/generate-pdf/
 - **Detalles de Pedidos**
    - castilla/api/detallepedidos/
    - castilla/api/detallepedidos/<int:pk>/
@@ -87,18 +90,23 @@ Para acceder a la documentación del API castilla: [http://127.0.0.1:8000/docs/]
 - **Estado de Insumos**
    - castilla/api/estadoinsumos/
    - castilla/api/estadoinsumos/<int:pk>/
+   - estadoinsumo/generate-pdf/
 - **Estado de Ordenes de Compra**
    - castilla/api/estadoocs/
    - castilla/api/estadoocs/<int:pk>/
+   - estadoocs/generate-pdf
 - **Estado de Pedidos**
    - castilla/api/estadopedidos/
    - castilla/api/estadopedidos/<int:pk>/
+   - estadopedidos/generate-pdf/
 - **Historicos**
    - castilla/api/historicos/
    - castilla/api/historicos/<int:pk>/
+   - historicos/generate-pdf/
 - **Insumos**
    - castilla/api/insumos/
    - castilla/api/insumos/<int:pk>/
+   - insumos/generate-pdf
 - **Inventarios**
    - castilla/api/inventario/
    - castilla/api/inventario/<int:pk>/

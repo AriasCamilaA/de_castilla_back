@@ -9,8 +9,8 @@ from apps.producto.api.ProductoSeralizers import ProductoSerializer
 
 
 class InventarioSeralizers(serializers.ModelSerializer):
-    insumo = InsumoSeralizers(source='id_insumo', read_only=True)
-    producto = ProductoSerializer(source='id_producto', read_only=True)
+    insumo = InsumoSeralizers(source='id_insumo_fk', read_only=True)
+    producto = ProductoSerializer(source='id_producto_fk', read_only=True)
     class Meta:
         model = Inventario
         fields = '__all__'  # Incluir todos los campos del modelo
