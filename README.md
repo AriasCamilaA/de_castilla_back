@@ -158,6 +158,8 @@ Para acceder a la documentación del API castilla: [http://127.0.0.1:8000/docs/]
 - **Ventas**
    - castilla/api/ventas/
    - castilla/api/ventas/<int:pk>/
+   - ventas/generate-pdf/
+   
 
 
 
