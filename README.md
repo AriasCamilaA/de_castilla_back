@@ -12,8 +12,11 @@
 2. **Crear y activar el entorno virtual:**
    ```bash
    python -m venv env
+   ```
+   ```bash
    .\env\Scrips\activate
    ```
+   
 
 3. **Instalar dependencias:**
    ```bash
@@ -44,13 +47,13 @@
 
 6. **Ejecutar el script de triggers, storage proceudres y views:**
 
-   Copiar el script _**db_views_triggers_SPs.sql**_ en la carpeta _**docs**_.
+   Copiar el script _**db_views_triggers_SPs.sql**_ que se encuentra en la carpeta _**docs**_.
 
    Ejecutar el script en MySQL.
 
 7. **Ejecutar el script de inserción de datos:**
 
-   Copiar el script _**db_inserts.sql**_ en la carpeta _**docs**_.
+   Copiar el script _**db_inserts.sql**_ que se encuentra en la carpeta _**docs**_.
 
    Ejecutar el script en MySQL.
 
