@@ -9,7 +9,6 @@ class Venta(models.Model):
     total_venta = models.IntegerField()
     id_pedido_fk = models.ForeignKey(Pedido, db_column='id_pedido_fk', on_delete=models.CASCADE, null=True, blank=True)
     no_documento_usuario_fk = models.ForeignKey(Usuario, db_column='no_documento_usuario_fk', on_delete=models.CASCADE, null=True, blank=True)
-    nombre_usuario = models.CharField(max_length=255, blank=True, null=True)  
     estado = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
