@@ -11,11 +11,11 @@ class Venta(models.Model):
     no_documento_usuario_fk = models.ForeignKey(Usuario, db_column='no_documento_usuario_fk', on_delete=models.CASCADE, null=True, blank=True)
     estado = models.BooleanField(default=True)
 
-    def save(self, *args, **kwargs):
+    # def save(self, *args, **kwargs):
   
-        if self.no_documento_usuario_fk:
-            self.nombre_usuario = self.no_documento_usuario_fk.nombre_usuario
-        super().save(*args, **kwargs)
+    #     if self.no_documento_usuario_fk:
+    #         self.nombre_usuario = self.no_documento_usuario_fk.nombre_usuario
+    #     super().save(*args, **kwargs)
 
     class Meta:
         db_table = 'venta'
