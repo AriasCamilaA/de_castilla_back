@@ -11,4 +11,5 @@ urlpatterns = [
     path('pedidos/', PedidoViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('pedidos/<int:pk>/', PedidoViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
     path('pedidos/generate-pdf/', generate_pdf, name='generate_pdf'),
+    path('pedidos/generate-pdf/<filtro>/', generate_pdf, name='generate_pdf'),
 ]
