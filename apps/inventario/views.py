@@ -9,10 +9,20 @@ from django.http import HttpResponse
 from datetime import date
 from .models import Inventario
 from reportlab.lib.units import inch
+from django.db.models import Q
 
-def generate_pdf(request):
+def generate_pdf(request, filtro=None):
     # Obtener todos los registros de inventario desde la base de datos
     inventario = Inventario.objects.all()
+
+    if filtro:
+        inventario = inventario.filter(
+            Q(id_inventario__icontains=filtro) |
+            Q(stock_inventario__icontains=filtro) |
+            Q(tipo_inventario__icontains=filtro) |
+            Q(id_insumo_fk__nombre_insumo__icontains=filtro) |
+            Q(id_producto_fk__nombre_producto__icontains=filtro)
+        )
 
     # Crear un objeto HttpResponse con el tipo de contenido PDF
     response = HttpResponse(content_type='application/pdf')
@@ -23,13 +33,15 @@ def generate_pdf(request):
     doc = SimpleDocTemplate(response, pagesize=letter)
 
     # Configurar los estilos de la tabla
-    style = TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#732F48')),
-                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#ffffff')),
-                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                        ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
-                        ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#F6E0E3')),
-                        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#8C274C'))])
+    style = TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#732F48')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#ffffff')),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#F6E0E3')),
+        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#8C274C'))
+    ])
 
     # Crear una lista de elementos Platypus para agregar al PDF
     elements = []
@@ -44,9 +56,9 @@ def generate_pdf(request):
     elements.append(Paragraph("<br/><br/><br/>Reporte de Inventario", ParagraphStyle(name='TitleStyle', fontName='Helvetica-Bold', fontSize=12, textColor=colors.HexColor('#8C274C'), alignment=1)))
 
     # Agregar espacio entre el título y la tabla
-    elements.append(Spacer(1, 18))
+    elements.append(Spacer(1, 12))
 
-    # Agregar los registros al PDF
+    # Crear una lista de datos para la tabla de contenido
     data = [["ID", "Stock", "Tipo", "Insumo/Producto"]]
     for i in inventario:
         # Obtener el nombre del insumo o producto

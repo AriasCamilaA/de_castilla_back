@@ -44,7 +44,7 @@ FOR EACH ROW
 BEGIN
     INSERT INTO inventario (stock_inventario, id_insumo_fk, tipo_inventario, estado) VALUES (0, NEW.id_insumo, "INSUMO",1);
     INSERT INTO historico (fecha_movimiento, cantidad_historico, id_insumo_fk, id_tipo_movimiento_fk, tipo_historico, estado) 
-    VALUES (NOW(), 0, NEW.id_insumo, 3, "INSUMO", 1);
+    VALUES (NOW(), 0, NEW.id_insumo, 2, "INSUMO", 1);
 END$$
 DELIMITER ;
 
@@ -55,7 +55,7 @@ FOR EACH ROW
 BEGIN
     INSERT INTO inventario (stock_inventario, id_producto_fk, tipo_inventario, estado) VALUES (0, NEW.id_producto, "PRODUCTO", 1);
     INSERT INTO historico (fecha_movimiento, cantidad_historico, id_producto_fk, id_tipo_movimiento_fk, tipo_historico, estado) 
-    VALUES (NOW(), 0, NEW.id_producto, 3, "PRODUCTO",1);
+    VALUES (NOW(), 0, NEW.id_producto, 2, "PRODUCTO",1);
 END$$
 DELIMITER ;
 

@@ -1,18 +1,20 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Spacer, Paragraph, Image
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Spacer, Paragraph
 from reportlab.lib import colors
 from reportlab.lib.styles import ParagraphStyle
 from .models import Producto
 from django.utils.html import escape as html_escape 
 from datetime import date 
+from django.db.models import Q
 
-def generate_pdf(request):
+def generate_pdf(request, filtro=None):
     # Obtener todos los productos desde la base de datos
     productos = Producto.objects.all()
+
+    if filtro:
+        # Aplicar el filtro al nombre del producto o al ID de la categoría
+        productos = productos.filter(Q(nombre_producto__icontains=filtro) | Q(id_categoria_fk__nombre_categoria__icontains=filtro)) 
 
     # Crear un objeto HttpResponse con el tipo de contenido PDF
     response = HttpResponse(content_type='application/pdf')
@@ -33,6 +35,9 @@ def generate_pdf(request):
 
     # Agregar el título en el centro
     elements.append(Paragraph("<br/><br/><br/>Reporte de Productos", ParagraphStyle(name='TitleStyle', fontName='Helvetica-Bold', fontSize=16, textColor=colors.HexColor('#8C274C'), alignment=1)))
+
+    filter_info = f"Filtro: filtro='{filtro}'"
+    elements.append(Spacer(1, 12))
 
     # Agregar espacio entre el título y la tabla
     elements.append(Spacer(1, 36))
