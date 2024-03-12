@@ -29,7 +29,7 @@ BEGIN
         INSERT INTO detalle_venta (cantidad_producto, subtotal_detalle_venta, id_producto_fk, id_venta_fk, estado)
         SELECT cantidad_producto, subtotal_detalle_pedido, id_producto_fk, @id_venta, 1
         FROM detalle_pedido
-        WHERE id_pedido_fk = NEW.id_pedido AND estado = 1;
+        WHERE id_pedido_fk = NEW.id_pedido;
     END IF;
 END$$
 

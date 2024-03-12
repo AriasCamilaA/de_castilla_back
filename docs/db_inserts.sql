@@ -91,7 +91,7 @@ INSERT INTO db_de_castilla.Estado_insumo (nombre_Estado_insumo, estado) VALUES
   ('No Caducado', 1),
   ('Caducado', 1);
 
-INSERT INTO db_de_castilla.Insumo (nombre_Insumo, id_Estado_insumo, estado) VALUES
+INSERT INTO db_de_castilla.Insumo (nombre_Insumo, id_Estado_insumo_fk, estado) VALUES
   ('Harina', 1, 1),
   ('Azíºcar', 1, 1),
   ('Mantequilla', 1, 1),
