@@ -43,7 +43,8 @@ INSERT INTO db_de_castilla.Rol (nombre_Rol, estado) VALUES
 
 INSERT INTO db_de_castilla.tipo_Movimiento (nombre_tipo_Movimiento, estado) VALUES
   ('Entrada', 1),
-  ('Salida', 1);
+  ('Salida', 1),
+  ('Creación', 1);
 
 
 
