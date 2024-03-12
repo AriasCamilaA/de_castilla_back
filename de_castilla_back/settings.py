@@ -54,7 +54,6 @@ LOCAL_APPS = [
     'apps.historico',
     'apps.insumo',
     'apps.inventario',
-    'apps.oc_has_provedor',
     'apps.orden_compra',
     'apps.pedido',
     'apps.permiso',

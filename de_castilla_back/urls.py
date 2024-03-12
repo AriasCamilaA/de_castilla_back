@@ -56,7 +56,6 @@ urlpatterns = [
     path('castilla/api/', include('apps.historico.api.router')),
     path('castilla/api/', include('apps.insumo.api.router')),
     path('castilla/api/', include('apps.inventario.api.router')),
-    path('castilla/api/', include('apps.oc_has_provedor.api.router')),
     path('castilla/api/', include('apps.orden_compra.api.router')),
     path('castilla/api/', include('apps.pedido.api.router')),
     path('castilla/api/', include('apps.permiso.api.router')),
