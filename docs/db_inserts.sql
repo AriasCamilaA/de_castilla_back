@@ -377,7 +377,8 @@ INSERT INTO db_de_castilla.Calificacion (estrellas_Calificacion,comentario_Calif
   
 INSERT INTO db_de_castilla.estado_oc (id_estado_oc, nombre_estado_oc, estado) VALUES
   (1, 'Solicitada', 1),
-  (2, 'Finalizada', 1);
+  (2, 'Cancelada', 1),
+  (3, 'Finalizada', 1);
   
 INSERT INTO db_de_castilla.Orden_Compra (fecha_oc, hora_oc, id_Estado_oc_FK, estado) VALUES
   ('2023-05-31', '10:00:00', 1, 1),
