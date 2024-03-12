@@ -45,31 +45,29 @@ INSERT INTO db_de_castilla.tipo_Movimiento (nombre_tipo_Movimiento, estado) VALU
   ('Entrada', 1),
   ('Salida', 1);
 
-INSERT INTO db_de_castilla.Estado_insumo (nombre_Estado_insumo, estado) VALUES
-  ('No Caducado', 1),
-  ('Caducado', 1);
 
-INSERT INTO db_de_castilla.Insumo (nombre_Insumo, id_Estado_insumo_fk, estado) VALUES
-  ('Harina', 1, 1),
-  ('Azíºcar', 1, 1),
-  ('Mantequilla', 1, 1),
-  ('Huevos', 1, 1),
-  ('Leche', 1, 1),
-  ('Vainilla', 1, 1),
-  ('Helado', 1, 1),
-  ('Fresas', 1, 1),
-  ('Crema', 1, 1),
-  ('Gelatina', 1, 1),
-  ('Nueces', 1, 1),
-  ('Canela', 1, 1),
-  ('Arequipe', 1, 1),
-  ('Levadura', 1, 1),
-  ('Chips de Chocolate', 1, 1),
-  ('oblea', 1, 1),
-  ('Coco rallado', 1, 1),
-  ('Galletas', 1, 1),
-  ('Cafí© molido', 1, 1),
-  ('Almendras', 2, 1);
+
+INSERT INTO db_de_castilla.Insumo (nombre_Insumo, estado) VALUES
+  ('Harina', 1),
+  ('Azíºcar', 1),
+  ('Mantequilla', 1),
+  ('Huevos', 1),
+  ('Leche', 1),
+  ('Vainilla', 1),
+  ('Helado', 1),
+  ('Fresas', 1),
+  ('Crema', 1),
+  ('Gelatina', 1),
+  ('Nueces', 1),
+  ('Canela', 1),
+  ('Arequipe', 1),
+  ('Levadura', 1),
+  ('Chips de Chocolate', 1),
+  ('oblea', 1),
+  ('Coco rallado', 1),
+  ('Galletas', 1),
+  ('Cafí© molido', 1),
+  ('Almendras', 1);
 
 INSERT INTO db_de_castilla.Producto (nombre_Producto, precio_Producto, imagen_Producto, id_Categoria_FK, estado) VALUES 
   ('Oblea especial', 4500, 'productos/oblea-especial.jpg', 1, 1),
