@@ -66,5 +66,4 @@ urlpatterns = [
     path('castilla/api/', include('apps.venta.api.router')),
     path('castilla/api/correo/', include('apps.correo.urls')),
     path('castilla/api/password_reset/', reset_password_request_token, name='password_reset'),
-    path("castilla/api/confirm/", reset_password_confirm, name="reset-password-confirm"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
