@@ -71,6 +71,7 @@ THIRD_APPS = [
     'corsheaders',
     'rest_framework',
     'drf_yasg',
+    'django_rest_passwordreset',
 ]
 
 INSTALLED_APPS = BASE_APPS + LOCAL_APPS + THIRD_APPS
