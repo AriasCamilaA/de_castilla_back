@@ -63,7 +63,6 @@ LOCAL_APPS = [
     'apps.tipo_movimiento',
     'apps.usuarios',
     'apps.venta',
-    'apps.correo',
 ]
 
 
