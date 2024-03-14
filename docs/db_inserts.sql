@@ -168,13 +168,13 @@ INSERT INTO db_de_castilla.Estado_Pedido(nombre_Estado, estado) VALUES
   ('Finalizados', 1);
   
 INSERT INTO db_de_castilla.Pedido (descripcion_Pedido, fecha_Pedido, id_Estado_Pedido_fk, no_Documento_Usuario_FK, estado) VALUES 
-  ('Sin descripción', '2023-06-12 09:30:00', 5, 7890123456, 1),
+  ('Sin descripción', '2023-06-12 09:30:00', 1, 7890123456, 1),
   ('Sin descripción', '2023-06-12 10:15:00', 1, 8901234567, 1),
-  ('Sin descripción', '2023-06-12 11:20:00', 3, 2345678902, 1),
-  ('Sin descripción', '2023-06-12 12:45:00', 5, 6789012346, 1),
+  ('Sin descripción', '2023-06-12 11:20:00', 2, 2345678902, 1),
+  ('Sin descripción', '2023-06-12 12:45:00', 1, 6789012346, 1),
   ('Sin descripción', '2023-06-12 13:30:00', 1, 2345678903, 1),
   ('Sin descripción', '2023-06-12 14:20:00', 3, 1234567893, 1),
-  ('Sin descripción', '2023-06-12 15:15:00', 5, 5678901237, 1),
+  ('Sin descripción', '2023-06-12 15:15:00', 2, 5678901237, 1),
   ('Sin descripción', '2023-06-12 16:10:00', 1, 6789012348, 1),
   ('Sin descripción', '2023-06-12 17:25:00', 3, 7890123459, 1),
   ('Sin descripción', '2023-06-12 18:40:00', 2, 5678901238, 1);
