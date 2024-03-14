@@ -8,11 +8,16 @@ use db_de_castilla;
 /*---Crear venta asociada cuando el pedido finalice ---*/
 DELIMITER $$
 
-CREATE TRIGGER TG_pedidofinalizado_AU AFTER UPDATE ON pedido
+CREATE TRIGGER TG_pedidofinalizado_BU BEFORE UPDATE ON pedido
 FOR EACH ROW
 BEGIN
     DECLARE total_venta BIGINT;
+    DECLARE fecha_fin DATE;
+
     IF NEW.id_estado_pedido_fk = 7 THEN -- 7 = Finalizado (estado pedido)
+        -- Actualizar la fecha de finalización del pedido
+        SET fecha_fin = CURDATE();
+
         -- Calcular el total de la venta sumando los subtotales de los detalles del pedido
         SELECT SUM(subtotal_detalle_pedido) INTO total_venta
         FROM detalle_pedido
@@ -30,10 +35,21 @@ BEGIN
         SELECT cantidad_producto, subtotal_detalle_pedido, id_producto_fk, @id_venta, 1
         FROM detalle_pedido
         WHERE id_pedido_fk = NEW.id_pedido;
+    ELSEIF NEW.id_estado_pedido_fk = 5 THEN
+        -- Si el estado es Cancelado
+        SET fecha_fin = CURDATE();
+    ELSE 
+        -- Si el estado no es 7 ni 5, mantener la fecha de finalización como NULL
+        SET fecha_fin = NULL;
     END IF;
+
+    -- Actualizar la fecha de finalización del pedido
+    SET NEW.fecha_fin_pedido = fecha_fin;
 END$$
 
 DELIMITER ;
+
+
 
 
 
