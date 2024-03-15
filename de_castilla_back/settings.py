@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
-import dj_database_url
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,17 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-eq6p5-!fynf4+p#q5z$g(!jibp5ng_ky)v-hg67s6oacppm_w='
-SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key')
+SECRET_KEY = 'django-insecure-eq6p5-!fynf4+p#q5z$g(!jibp5ng_ky)v-hg67s6oacppm_w='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = 'RENDER' not in os.environ
+DEBUG = True
 
 ALLOWED_HOSTS = []
-
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_EXTERNAL_HOSTNAME: ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
 # Application definition
@@ -102,7 +96,6 @@ SIMPLE_JWT = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # whitenoise para servir archivos estáticos
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -141,23 +134,16 @@ WSGI_APPLICATION = 'de_castilla_back.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME':  'db_de_castilla',
-#         'PASSWORD': '123456',
-#         'USER': 'root',
-#         'HOST': '127.0.0.1',
-#         'PORT': '3306',
-#     }
-# }
-
 DATABASES = {
-    'default': dj_database_url.config(
-        default='mysql://root:123456@127.0.0.1:3306/db_de_castilla'
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME':  'db_de_castilla',
+        'PASSWORD': '123456',
+        'USER': 'root',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    }
 }
-
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
@@ -197,10 +183,6 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = './static/'
-
-if not DEBUG:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
