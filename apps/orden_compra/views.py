@@ -1,3 +1,9 @@
+from django.shortcuts import render
+
+# Create your views here.
+from django.shortcuts import render
+
+# Create your views here.
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Spacer, Paragraph
@@ -7,7 +13,6 @@ from .models import OrdenCompra
 from django.utils.html import escape as html_escape 
 from datetime import datetime
 from datetime import date
-from apps.estado_oc.models import EstadoOC
 
 def generate_pdf(request):
     # Obtener todas las órdenes de compra desde la base de datos
@@ -25,11 +30,12 @@ def generate_pdf(request):
     # Crear una lista de elementos Platypus para agregar al PDF
     elements = []
 
-    # Agregar el texto "Logo empresarial" en la esquina superior izquierda
+        # Agregar el texto "Logo empresarial" en la esquina superior izquierda
     elements.append(Paragraph("Logo empresarial", ParagraphStyle(name='LogoStyle', fontName='Helvetica-Bold', fontSize=12, textColor=colors.HexColor('#732F48'))))
 
     # Agregar la fecha en la esquina superior derecha
     elements.append(Paragraph(f"{date.today().strftime('%d/%m/%Y')}", ParagraphStyle(name='DateStyle', fontName='Helvetica-Bold', fontSize=10, alignment=2)))
+
 
     # Agregar el título en el centro
     elements.append(Paragraph("<br/><br/><br/>Reporte de Órdenes de Compra", ParagraphStyle(name='TitleStyle', fontName='Helvetica-Bold', fontSize=16, textColor=colors.HexColor('#8C274C'), alignment=1)))
@@ -39,16 +45,15 @@ def generate_pdf(request):
 
     # Crear una lista de datos para la tabla de contenido
     data = [
-        ["ID", "Fecha", "Hora", "Nombre Estado"]
+        ["ID", "Fecha", "Hora", "Estado"]
     ]
     # Agregar los datos de cada orden de compra a la lista de datos
     for orden in ordenes_compra:
-        nombre_estado = orden.id_estado_oc_fk.nombre_estado_oc if orden.id_estado_oc_fk else ''
         data.append([
             str(orden.id_oc),
             orden.fecha_oc.strftime('%d/%m/%Y'),
             orden.hora_oc.strftime('%H:%M:%S'),
-            nombre_estado,
+            'Activo' if orden.estado else 'Inactivo',
         ])
 
     # Crear una tabla y definir su estilo
