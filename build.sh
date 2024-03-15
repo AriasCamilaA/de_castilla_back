@@ -2,7 +2,7 @@
 # exit on error
 set -o errexit
 
-python install -r requirements.txt
+poerty install -r requirements.txt
 
 python manage.py collectstatic --noinput
 python manage.py migrate
