@@ -109,7 +109,8 @@ MIDDLEWARE = [
 
 # O para permitir origenes específicos:
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "https://de-castilla-front.vercel.app"
 ]
 
 ROOT_URLCONF = 'de_castilla_back.urls'
