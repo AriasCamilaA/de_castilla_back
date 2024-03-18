@@ -1,73 +1,106 @@
-from django.shortcuts import render
-
-# Create your views here.
-from django.db import models
-from apps.insumo.models import Insumo
-from apps.producto.models import Producto
-from apps.tipo_movimiento.models import TipoMovimiento
+from django.http import HttpResponse
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import ParagraphStyle
-from django.http import HttpResponse
-from datetime import date
-from .models import Historico
 from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
+from datetime import date
+from django.db.models import Q
+from .models import Historico
+import os
 
-def generate_pdf(request):
-    # Obtener todos los registros del historial desde la base de datos
-    historial = Historico.objects.all()
+def generate_pdf(request, filtro=None):
+    try:
+        # Obtener todos los registros del historial desde la base de datos
+        historial = Historico.objects.all()
 
-    # Crear un objeto HttpResponse con el tipo de contenido PDF
-    response = HttpResponse(content_type='application/pdf')
-    # Definir el nombre del archivo PDF
-    response['Content-Disposition'] = 'attachment; filename="reporte_historico.pdf"'
+        if filtro:
+            # Aplicar el filtro a la consulta
+            historial = historial.filter(
+                Q(id_historico__icontains=filtro) |
+                Q(cantidad_historico__icontains=filtro) |
+                Q(fecha_caducidad__icontains=filtro) |
+                Q(fecha_movimiento__icontains=filtro) |
+                Q(tipo_historico__icontains=filtro) |
+                Q(id_insumo_fk__nombre_insumo__icontains=filtro) |
+                Q(id_producto_fk__nombre_producto__icontains=filtro)
+            )
+            filtro_texto = f"Filtro = {filtro}"
+        else:
+            filtro_texto = ""
 
-    # Crear un objeto SimpleDocTemplate para generar el PDF
-    doc = SimpleDocTemplate(response, pagesize=letter)
+        # Crear un objeto HttpResponse con el tipo de contenido PDF
+        response = HttpResponse(content_type='application/pdf')
+        # Definir el nombre del archivo PDF
+        response['Content-Disposition'] = 'attachment; filename="reporte_historico.pdf"'
 
-    # Configurar los estilos de la tabla
-    style = TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#732F48')),
-                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#ffffff')),
-                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                        ('BOTTOMPADDING', (0, 0), (-1, 0), 6),  # Reducir el espaciado inferior de las celdas
-                        ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#F6E0E3')),
-                        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#8C274C'))])
+        # Crear un objeto SimpleDocTemplate para generar el PDF
+        doc = SimpleDocTemplate(response, pagesize=letter)
 
-    # Crear una lista de elementos Platypus para agregar al PDF
-    elements = []
+        # Configurar los estilos de la tabla
+        style = TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#732F48')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#ffffff')),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#F6E0E3')),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#8C274C'))
+        ])
 
-    # Agregar el texto "Logo empresarial" en la esquina superior izquierda
-    elements.append(Paragraph("Logo empresarial", ParagraphStyle(name='LogoStyle', fontName='Helvetica-Bold', fontSize=10, textColor=colors.HexColor('#732F48'))))  # Reducir el tamaño de la fuente
+        # Ruta completa de la imagen del logo
+        image_path = os.path.join(os.path.dirname(__file__), '../../media/logo/logo_letra_oscura.png')
 
-    # Agregar la fecha en la esquina superior derecha
-    elements.append(Paragraph(f"{date.today().strftime('%d/%m/%Y')}", ParagraphStyle(name='DateStyle', fontName='Helvetica-Bold', fontSize=8, alignment=2)))  # Reducir el tamaño de la fuente
+        # Verificar si la imagen existe en la ruta especificada
+        if os.path.exists(image_path):
+            # Crear una lista de elementos Platypus para agregar al PDF
+            elements = []
 
-    # Agregar el título en el centro
-    elements.append(Paragraph("<br/><br/><br/>Reporte de Ventas", ParagraphStyle(name='TitleStyle', fontName='Helvetica-Bold', fontSize=12, textColor=colors.HexColor('#8C274C'), alignment=1)))  # Reducir el tamaño de la fuente
+            # Crear una tabla con dos columnas para la imagen y la fecha
+            table_data = [
+                [Image(image_path, width=70, height=50), Paragraph(f"{date.today().strftime('%d/%m/%Y')}", ParagraphStyle(name='DateStyle', fontName='Helvetica-Bold', fontSize=10, alignment=2))]
+            ]
+            table = Table(table_data, colWidths=[100, 400])  # Ancho de las columnas
+            elements.append(table)
 
-    # Agregar espacio entre el título y la tabla
-    elements.append(Spacer(1, 18))  # Reducir el espacio entre el título y la tabla
+            # Agregar espacio entre la imagen/fecha y el título de la tabla
+            elements.append(Spacer(1, 10))
 
-    # Agregar los registros al PDF
-    data = [["N°", "Cantidad", "Fecha de Caducidad", "Fecha de Movimiento", "Tipo", "Insumo/Producto"]]
-    for h in historial:
-        # Obtener el nombre del insumo o producto
-        nombre_insumo_producto = h.id_insumo_fk.nombre_insumo if h.id_insumo_fk else h.id_producto_fk.nombre_producto
-        # Agregar los detalles del historial al documento
-        data.append([str(h.id_historico), str(h.cantidad_historico), str(h.fecha_caducidad), str(h.fecha_movimiento), h.tipo_historico, nombre_insumo_producto])
+            # Agregar el título en el centro
+            elements.append(Paragraph("<br/><br/><br/>Historico", ParagraphStyle(name='TitleStyle', fontName='Helvetica-Bold', fontSize=16, textColor=colors.HexColor('#8C274C'), alignment=1)))
 
-    # Crear la tabla con los datos y aplicar los estilos
-    table = Table(data)
-    table.setStyle(style)
-    table._argW[4] = 1 * inch  # Ajustar el ancho de la columna Insumo/Producto
+            # Agregar el texto del filtro si se aplicó
+            if filtro_texto:
+                elements.append(Spacer(1, 10))
+                elements.append(Paragraph(filtro_texto, ParagraphStyle(name='FilterStyle', fontName='Helvetica', fontSize=12)))
 
-    # Agregar la tabla al documento
-    elements.append(table)
+            # Agregar espacio entre el título/filtro y la tabla
+            elements.append(Spacer(1, 36))
 
-    # Construir el PDF
-    doc.build(elements)
+            # Agregar los registros al PDF
+            data = [["N°", "Cantidad", "Fecha de Caducidad", "Fecha de Movimiento", "Tipo", "Insumo/Producto"]]
+            for h in historial:
+                # Obtener el nombre del insumo o producto
+                nombre_insumo_producto = h.id_insumo_fk.nombre_insumo if h.id_insumo_fk else h.id_producto_fk.nombre_producto
+                # Agregar los detalles del historial al documento
+                data.append([str(h.id_historico), str(h.cantidad_historico), str(h.fecha_caducidad), str(h.fecha_movimiento), h.tipo_historico, nombre_insumo_producto])
 
-    # Devolver la respuesta con el PDF generado
-    return response
+            # Crear la tabla con los datos y aplicar los estilos
+            table = Table(data)
+            table.setStyle(style)
+            table._argW[4] = 1 * inch  # Ajustar el ancho de la columna Insumo/Producto
+
+            # Agregar la tabla al documento
+            elements.append(table)
+
+            # Construir el PDF
+            doc.build(elements)
+
+            # Devolver la respuesta con el PDF generado
+            return response
+        else:
+            return HttpResponse("La imagen del logo no se pudo encontrar.", status=404)
+
+    except Exception as e:
+        # En caso de error, devolver una respuesta de error
+        return HttpResponse(f"Ocurrió un error: {str(e)}", status=500)
