@@ -1,93 +1,100 @@
+from django.http import HttpResponse
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Spacer
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import Paragraph
-from django.http import HttpResponse
 from .models import Pedido
 from datetime import date
+from django.db.models import Q
+from datetime import datetime
 
-def generate_pdf(request):
-    # Colores personalizados
-    color_oscuro = colors.HexColor('#732F48')
-    color_medio = colors.HexColor('#8C274C')
-    color_claro = colors.HexColor('#F26B9C')
-    color_fondo1 = colors.HexColor('#F6E0E3')
-    color_fondo2 = colors.HexColor('#FDEBEB')
-    color_fondo3 = colors.HexColor('#FDF5E7')
-    color_blanco = colors.HexColor('#ffffff')
-    color_gris = colors.HexColor('#f2f2f2')
+def generate_pdf(request, filtro=None):
 
-    # Obtener todos los objetos de Pedido desde la base de datos
-    pedidos = Pedido.objects.all()
+    try:
+        fecha_inicial = request.GET.get('fecha_inicial', None)
+        fecha_final = request.GET.get('fecha_final', None)
 
-    # Obtener la fecha actual
-    today = date.today().strftime("%d/%m/%Y")
+        # Obtener todos los objetos de Pedido desde la base de datos
+        pedidos = Pedido.objects.all()
 
-    # Crea un objeto HttpResponse con el tipo de contenido PDF
-    response = HttpResponse(content_type='application/pdf')
-    # Define el nombre del archivo PDF
-    response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+        if fecha_inicial:
+            if not fecha_final:
+                fecha_final = datetime.now().date()
+            pedidos = pedidos.filter(fecha_pedido__range=(fecha_inicial, fecha_final))
 
-    # Crea un objeto SimpleDocTemplate para generar el PDF
-    doc = SimpleDocTemplate(response, pagesize=letter)
+        if filtro:
+            pedidos = pedidos.filter(Q( id_pedido__icontains=filtro) | Q(no_Documento_Usuario_fk__nombre_usuario__icontains=filtro) | Q(no_Documento_Usuario_fk__no_documento_usuario__icontains=filtro))
 
-    # Crear una lista de datos para el contenido principal
-    data = [
-        ["N° Pedido", "Descripción", "Fecha", "Estado", "Documento", "Cliente"]
-    ]
-    # Agregar los datos de cada pedido a la lista de datos
-    for pedido in pedidos:
-        data.append([
-            str(pedido.id_pedido),
-            pedido.descripcion_pedido,
-            str(pedido.fecha_pedido),
-            pedido.id_estado_pedido_fk.nombre_estado,  # Suponiendo que 'nombre_estado' es un campo en EstadoPedido
-            pedido.no_Documento_Usuario_fk.no_documento_usuario, # Suponiendo que 'numero_documento' es un campo en Usuario
-            pedido.no_Documento_Usuario_fk.nombre_usuario, # Suponiendo que 'nombre_usuario' es un campo en Usuario
-        ])
 
-    # Crear una tabla y definir su estilo
-    table = Table(data)
-    style = TableStyle([('BACKGROUND', (0, 0), (-1, 0), color_oscuro),
-                        ('TEXTCOLOR', (0, 0), (-1, 0), color_blanco),
-                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                        ('BACKGROUND', (0, 1), (-1, -1), color_fondo1),
-                        ('GRID', (0, 0), (-1, -1), 1, color_medio)])
+        # Crea un objeto HttpResponse con el tipo de contenido PDF
+        response = HttpResponse(content_type='application/pdf')
+        # Define el nombre del archivo PDF
+        response['Content-Disposition'] = 'attachment; filename="reporte_pedidos.pdf"'
 
-    # Aplicar el estilo a la tabla
-    table.setStyle(style)
+        # Crea un objeto SimpleDocTemplate para generar el PDF
+        doc = SimpleDocTemplate(response, pagesize=letter)
 
-    # Crear una lista de elementos Platypus para agregar al PDF
-    elements = []
+        # Configurar los estilos
+        styles = getSampleStyleSheet()
+        style_heading = styles['Heading1']
+        style_body = styles['BodyText']
 
-    # Añadir espacio para el logo
-    elements.append(Spacer(1, 2 * 20))  # 2 pulgadas
+        # Crear una lista de elementos Platypus para agregar al PDF
+        elements = []
 
-    # Agregar el título
-    styles = getSampleStyleSheet()
-    title = Paragraph("Reporte de Pedidos", styles['Title'])
-    elements.append(title)
+        # Agregar el texto "Logo empresarial" en la esquina superior izquierda
+        elements.append(Paragraph("Logo empresarial", ParagraphStyle(name='LogoStyle', fontName='Helvetica-Bold', fontSize=12, textColor=colors.HexColor('#732F48'))))
 
-    # Definir estilo para la fecha centrada
-    centered_style = ParagraphStyle(
-        name='Centered',
-        alignment=1,
-        parent=styles['Normal']
-    )
+        # Agregar la fecha en la esquina superior derecha
+        elements.append(Paragraph(f"{date.today().strftime('%d/%m/%Y')}", ParagraphStyle(name='DateStyle', fontName='Helvetica-Bold', fontSize=10, alignment=2)))
 
-    # Agregar la fecha
-    date_paragraph = Paragraph("Fecha: " + today, centered_style)
-    elements.append(date_paragraph)
-    elements.append(Spacer(1, 12))  # 12 puntos de espacio
+        # Agregar el título en el centro
+        elements.append(Paragraph("<br/><br/><br/>Reporte de Pedidos", ParagraphStyle(name='TitleStyle', fontName='Helvetica-Bold', fontSize=16, textColor=colors.HexColor('#8C274C'), alignment=1)))
 
-    # Agregar la tabla al contenido
-    elements.append(table)
+        # Agregar el filtro utilizado
+        filter_info = f"Filtro: filtro='{filtro},fecha inicial{fecha_inicial}, fecha final{fecha_final}"
+        elements.append(Paragraph(filter_info, style_body))
+        elements.append(Spacer(1, 12))  # Espacio entre el filtro y la tabla
 
-    # Generar el PDF
-    doc.build(elements)
+        # Agregar espacio entre el título y la tabla
+        elements.append(Spacer(1, 36))
 
-    # Devolver la respuesta con el PDF generado
-    return response
+        # Crear una lista de datos para el contenido principal
+        data = [
+            ["N° Pedido", "Descripción", "Fecha", "Estado", "Documento", "Cliente"]
+        ]
+        # Agregar los datos de cada pedido a la lista de datos
+        for pedido in pedidos:
+            data.append([
+                str(pedido.id_pedido),
+                pedido.descripcion_pedido,
+                str(pedido.fecha_pedido),
+                pedido.id_estado_pedido_fk.nombre_estado if pedido.id_estado_pedido_fk else "N/A",  
+                pedido.no_Documento_Usuario_fk.no_documento_usuario if pedido.no_Documento_Usuario_fk else "N/A", 
+                f"{pedido.no_Documento_Usuario_fk.nombre_usuario} {pedido.no_Documento_Usuario_fk.apellido_usuario}" if pedido.no_Documento_Usuario_fk else "",
+            ])
+
+        # Crear una tabla y definir su estilo
+        table = Table(data)
+        style = TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#732F48')),
+                            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#ffffff')),
+                            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#F6E0E3')),
+                            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#8C274C'))])
+
+        # Aplicar el estilo a la tabla
+        table.setStyle(style)
+
+        # Agregar la tabla al contenido
+        elements.append(table)
+
+        # Generar el PDF
+        doc.build(elements)
+
+        # Devolver la respuesta con el PDF generado
+        return response
+    except Exception as e:
+        # En caso de error, devolver una respuesta de error
+        return HttpResponse(f"Ocurrió un error: {str(e)}", status=500)

@@ -22,8 +22,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.conf import settings
 from django.conf.urls.static import static
-
-
+from django_rest_passwordreset.views import reset_password_request_token, reset_password_confirm
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -50,24 +49,20 @@ urlpatterns = [
     path('castilla/api/', include('apps.detalle_oc.api.router')),
     path('castilla/api/', include('apps.detalle_pedido.api.router')),
     path('castilla/api/', include('apps.detalle_venta.api.router')),
-    path('castilla/api/', include('apps.estado_insumo.api.router')),
     path('castilla/api/', include('apps.estado_oc.api.router')),
     path('castilla/api/', include('apps.estado_pedido.api.router')),
     path('castilla/api/', include('apps.historico.api.router')),
     path('castilla/api/', include('apps.insumo.api.router')),
     path('castilla/api/', include('apps.inventario.api.router')),
-    path('castilla/api/', include('apps.oc_has_provedor.api.router')),
     path('castilla/api/', include('apps.orden_compra.api.router')),
     path('castilla/api/', include('apps.pedido.api.router')),
-    path('castilla/api/', include('apps.permiso.api.router')),
     path('castilla/api/', include('apps.producto.api.router')),
     path('castilla/api/', include('apps.proveedor.api.router')),
     path('castilla/api/', include('apps.rol.api.router')),
-    path('castilla/api/', include('apps.rol_has_permisos.api.router')),
     path('castilla/api/', include('apps.sabor.api.router')),
     path('castilla/api/', include('apps.sabor_has_producto.api.router')),
     path('castilla/api/', include('apps.tipo_movimiento.api.router')),
     path('castilla/api/', include('apps.usuarios.api.router')),
     path('castilla/api/', include('apps.venta.api.router')),
-    path('castilla/api/correo/', include('apps.correo.urls')),
+    path('castilla/api/password_reset/', reset_password_request_token, name='password_reset'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
