@@ -6,12 +6,12 @@ __________________________________________________________*/
 
 
 
-
 -- Crear venta asociada cuando el pedido finalice
 CREATE OR REPLACE FUNCTION calcular_total_venta() RETURNS TRIGGER AS $$
 DECLARE
     total_venta NUMERIC;
     fecha_fin DATE;
+    documento_usuario_fk BIGINT; -- Cambiado a BIGINT
 BEGIN
     IF NEW.id_estado_pedido_fk = 7 THEN -- 7 = Finalizado (estado pedido)
         -- Actualizar la fecha de finalización del pedido
@@ -22,9 +22,14 @@ BEGIN
         FROM detalle_pedido
         WHERE id_pedido_fk = NEW.id_pedido;
 
+        -- Obtener el documento del usuario asociado al pedido
+        SELECT "no_Documento_Usuario_fk" INTO documento_usuario_fk
+        FROM pedido
+        WHERE id_pedido = NEW.id_pedido;
+
         -- Insertar en la tabla venta
-        INSERT INTO venta (fecha_venta, hora_venta, total_venta, id_pedido_fk, no_documento_usuario_fk, estado)
-        VALUES (CURRENT_DATE, CURRENT_TIME, total_venta, NEW.id_pedido, NEW.no_documento_usuario_fk, TRUE);
+        INSERT INTO venta (fecha_venta, hora_venta, total_venta, id_pedido_fk, no_Documento_Usuario_fk, estado)
+        VALUES (CURRENT_DATE, CURRENT_TIME, total_venta, NEW.id_pedido, documento_usuario_fk, TRUE);
 
         -- Insertar detalles de la venta
         INSERT INTO detalle_venta (cantidad_producto, subtotal_detalle_venta, id_producto_fk, id_venta_fk, estado)
