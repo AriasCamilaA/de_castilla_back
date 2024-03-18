@@ -8,11 +8,16 @@ use db_de_castilla;
 /*---Crear venta asociada cuando el pedido finalice ---*/
 DELIMITER $$
 
-CREATE TRIGGER TG_pedidofinalizado_AU AFTER UPDATE ON pedido
+CREATE TRIGGER TG_pedidofinalizado_BU BEFORE UPDATE ON pedido
 FOR EACH ROW
 BEGIN
     DECLARE total_venta BIGINT;
+    DECLARE fecha_fin DATE;
+
     IF NEW.id_estado_pedido_fk = 7 THEN -- 7 = Finalizado (estado pedido)
+        -- Actualizar la fecha de finalización del pedido
+        SET fecha_fin = CURDATE();
+
         -- Calcular el total de la venta sumando los subtotales de los detalles del pedido
         SELECT SUM(subtotal_detalle_pedido) INTO total_venta
         FROM detalle_pedido
@@ -29,11 +34,40 @@ BEGIN
         INSERT INTO detalle_venta (cantidad_producto, subtotal_detalle_venta, id_producto_fk, id_venta_fk, estado)
         SELECT cantidad_producto, subtotal_detalle_pedido, id_producto_fk, @id_venta, 1
         FROM detalle_pedido
-        WHERE id_pedido_fk = NEW.id_pedido AND estado = 1;
+        WHERE id_pedido_fk = NEW.id_pedido;
+    ELSEIF NEW.id_estado_pedido_fk = 5 THEN
+        -- Si el estado es Cancelado
+        SET fecha_fin = CURDATE();
+    ELSE 
+        -- Si el estado no es 7 ni 5, mantener la fecha de finalización como NULL
+        SET fecha_fin = NULL;
+    END IF;
+
+    -- Actualizar la fecha de finalización del pedido
+    SET NEW.fecha_fin_pedido = fecha_fin;
+END$$
+
+DELIMITER ;
+
+
+/---registra la cantidad de insumos que entran cuando la orden de compra cambie de estado a finalizada ---/
+DELIMITER $$
+
+CREATE TRIGGER TG_ordencompra_finalizada_AU AFTER UPDATE ON orden_compra
+FOR EACH ROW
+BEGIN
+    IF NEW.id_estado_oc_fk = 3 THEN
+        -- Insertar en la tabla historico
+        INSERT INTO historico (fecha_movimiento, cantidad_Historico, tipo_Historico, id_Insumo_FK, id_tipo_Movimiento_FK, estado)
+        SELECT NOW(), detalle_oc.cantidad_insumo, 'INSUMO', detalle_oc.id_insumo_fk, 1, 1
+        FROM detalle_oc
+        WHERE detalle_oc.id_oc_fk = NEW.id_oc;
     END IF;
 END$$
 
 DELIMITER ;
+
+
 
 
 
@@ -44,7 +78,7 @@ FOR EACH ROW
 BEGIN
     INSERT INTO inventario (stock_inventario, id_insumo_fk, tipo_inventario, estado) VALUES (0, NEW.id_insumo, "INSUMO",1);
     INSERT INTO historico (fecha_movimiento, cantidad_historico, id_insumo_fk, id_tipo_movimiento_fk, tipo_historico, estado) 
-    VALUES (NOW(), 0, NEW.id_insumo, 2, "INSUMO", 1);
+    VALUES (NOW(), 0, NEW.id_insumo, 3, "INSUMO", 1);
 END$$
 DELIMITER ;
 
@@ -55,7 +89,7 @@ FOR EACH ROW
 BEGIN
     INSERT INTO inventario (stock_inventario, id_producto_fk, tipo_inventario, estado) VALUES (0, NEW.id_producto, "PRODUCTO", 1);
     INSERT INTO historico (fecha_movimiento, cantidad_historico, id_producto_fk, id_tipo_movimiento_fk, tipo_historico, estado) 
-    VALUES (NOW(), 0, NEW.id_producto, 2, "PRODUCTO",1);
+    VALUES (NOW(), 0, NEW.id_producto, 3, "PRODUCTO",1);
 END$$
 DELIMITER ;
 

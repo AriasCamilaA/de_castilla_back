@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
+import dj_database_url
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -28,7 +29,7 @@ SECRET_KEY = 'django-insecure-eq6p5-!fynf4+p#q5z$g(!jibp5ng_ky)v-hg67s6oacppm_w=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['de-castilla-back.onrender.com']
 
 
 # Application definition
@@ -48,26 +49,21 @@ LOCAL_APPS = [
     'apps.detalle_oc',
     'apps.detalle_pedido',
     'apps.detalle_venta',
-    'apps.estado_insumo',
     'apps.estado_oc',
     'apps.estado_pedido',
     'apps.historico',
     'apps.insumo',
     'apps.inventario',
-    'apps.oc_has_provedor',
     'apps.orden_compra',
     'apps.pedido',
-    'apps.permiso',
     'apps.producto',
     'apps.proveedor',
     'apps.rol',
-    'apps.rol_has_permisos',
     'apps.sabor',
     'apps.sabor_has_producto',
     'apps.tipo_movimiento',
     'apps.usuarios',
     'apps.venta',
-    'apps.correo',
 ]
 
 
@@ -75,6 +71,7 @@ THIRD_APPS = [
     'corsheaders',
     'rest_framework',
     'drf_yasg',
+    'django_rest_passwordreset',
 ]
 
 INSTALLED_APPS = BASE_APPS + LOCAL_APPS + THIRD_APPS
@@ -100,6 +97,7 @@ SIMPLE_JWT = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -111,7 +109,8 @@ MIDDLEWARE = [
 
 # O para permitir origenes específicos:
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "https://de-castilla-front.vercel.app"
 ]
 
 ROOT_URLCONF = 'de_castilla_back.urls'
@@ -138,16 +137,23 @@ WSGI_APPLICATION = 'de_castilla_back.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME':  'db_de_castilla',
+#         'PASSWORD': '123456',
+#         'USER': 'root',
+#         'HOST': '127.0.0.1',
+#         'PORT': '3306',
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME':  'db_de_castilla',
-        'PASSWORD': '123456',
-        'USER': 'root',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-    }
+    'default': dj_database_url.config(
+        default='mysql://root:123456@127.0.0.1:3306/db_de_castilla'
+    )
 }
+
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
@@ -185,8 +191,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+# STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = './static/'
+
+if not DEBUG:
+    # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
+    # and renames the files with unique names for each version to support long-term caching
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
