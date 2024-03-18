@@ -11,46 +11,52 @@ CREATE OR REPLACE FUNCTION calcular_total_venta() RETURNS TRIGGER AS $$
 DECLARE
     total_venta NUMERIC;
     fecha_fin DATE;
-    documento_usuario_fk BIGINT; -- Cambiado a BIGINT
+    hora_venta TIME; -- Cambiado a tipo TIME
+    documento_USUARIO BIGINT;
+    id_venta_inserted BIGINT; -- Variable para almacenar el ID de la venta insertada
 BEGIN
-    IF NEW.id_estado_pedido_fk = 7 THEN -- 7 = Finalizado (estado pedido)
-        -- Actualizar la fecha de finalización del pedido
+    -- Bloque de registro para depuración
+    RAISE NOTICE 'Función calcular_total_venta() llamada para pedido ID: %, Estado anterior: %, Estado actual: %', NEW.id_pedido, OLD.id_estado_pedido_fk, NEW.id_estado_pedido_fk;
+
+    -- Verificar si el estado del pedido ha cambiado a finalizado (estado 7)
+    IF NEW.id_estado_pedido_fk = 7 AND OLD.id_estado_pedido_fk != 7 THEN
         fecha_fin := CURRENT_DATE;
 
-        -- Calcular el total de la venta sumando los subtotales de los detalles del pedido
+        -- Calcular el total de la venta
         SELECT SUM(subtotal_detalle_pedido) INTO total_venta
         FROM detalle_pedido
         WHERE id_pedido_fk = NEW.id_pedido;
 
-        -- Obtener el documento del usuario asociado al pedido
-        SELECT "no_Documento_Usuario_fk" INTO documento_usuario_fk
+        -- Obtener el documento del usuario
+        SELECT "no_Documento_Usuario_fk" INTO documento_USUARIO
         FROM pedido
         WHERE id_pedido = NEW.id_pedido;
 
-        -- Insertar en la tabla venta
-        INSERT INTO venta (fecha_venta, hora_venta, total_venta, id_pedido_fk, no_Documento_Usuario_fk, estado)
-        VALUES (CURRENT_DATE, CURRENT_TIME, total_venta, NEW.id_pedido, documento_usuario_fk, TRUE);
+        -- Obtener la hora actual
+        hora_venta := CURRENT_TIME;
 
-        -- Insertar detalles de la venta
+        -- Insertar en la tabla venta
+        INSERT INTO venta (fecha_venta, hora_venta, total_venta, id_pedido_fk, "no_documento_usuario_fk", estado)
+        VALUES (CURRENT_DATE, hora_venta, total_venta, NEW.id_pedido, documento_USUARIO, TRUE)
+        RETURNING id_venta INTO id_venta_inserted; -- Obtenemos el ID de la venta insertada
+
+        -- Insertar detalles de la venta usando el ID de la venta recién insertada
         INSERT INTO detalle_venta (cantidad_producto, subtotal_detalle_venta, id_producto_fk, id_venta_fk, estado)
-        SELECT cantidad_producto, subtotal_detalle_pedido, id_producto_fk, lastval(), TRUE
+        SELECT cantidad_producto, subtotal_detalle_pedido, id_producto_fk, id_venta_inserted, TRUE
         FROM detalle_pedido
         WHERE id_pedido_fk = NEW.id_pedido;
     ELSIF NEW.id_estado_pedido_fk = 5 THEN
-        -- Si el estado es Cancelado
         fecha_fin := CURRENT_DATE;
     ELSE 
-        -- Si el estado no es 7 ni 5, mantener la fecha de finalización como NULL
         fecha_fin := NULL;
     END IF;
 
-    -- Actualizar la fecha de finalización del pedido
     NEW.fecha_fin_pedido := fecha_fin;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER TG_pedidofinalizado_BU
+CREATE OR REPLACE TRIGGER TG_pedidofinalizado_AU
 BEFORE UPDATE ON pedido
 FOR EACH ROW
 EXECUTE FUNCTION calcular_total_venta();
