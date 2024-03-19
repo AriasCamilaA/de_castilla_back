@@ -6,19 +6,68 @@ def api_url():
     return "http://127.0.0.1:8000/castilla/api/login/"
 
 def test_login(api_url):
-    # Datos de ejemplo para el login
     login_data = {
-        "email": "Ruiz_Jimenez@example.com",
+        "email": "Romero_Morales@example.com",
         "password": "1234ABCD*"
     }
 
-    # Realizar la solicitud POST para iniciar sesión
     response = requests.post(api_url, json=login_data)
 
-    # Comprobar si la solicitud fue exitosa (código de respuesta 200)
     assert response.status_code == 200
 
-    # Comprobar si se recibió un token de autenticación en la respuesta
     assert "token" in response.json()
 
-    # También puedes realizar otras afirmaciones sobre los datos de la respuesta si es necesario
+
+def test_password_reset():
+    data = {
+        "email": "Romero_Morales@example.com"
+    }
+
+    response = requests.post("http://127.0.0.1:8000/castilla/api/password_reset/", json=data)
+
+    assert response.status_code == 200
+
+    json_response = response.json()
+    assert "status" in json_response
+    assert json_response["status"] == "OK"
+
+
+def test_validacion_informacion_formulario():
+    cliente_invalido = {
+        "nombre_usuario": "UsuarioInvalido",
+        "email": "correo_invalido"
+    }
+
+    response = requests.post("http://127.0.0.1:8000/castilla/api/usuarios/", json=cliente_invalido)
+
+    assert response.status_code == 400
+
+    response_data = response.json()
+    assert "email" in response_data
+    assert "nombre_usuario" not in response_data
+    assert "no_documento_usuario" in response_data
+
+
+base_url = 'http://127.0.0.1:8000/castilla/api/usuarios/'
+
+def test_registro_cliente():
+    nuevo_cliente = {
+        "no_documento_usuario": 78484211,
+        "password": "1234AD*21398+3",
+        "apellido_usuario": "Rivas Palacios",
+        "celular_usuario": 9012345682,
+        "email": "CarolinePasos@example.com",
+        "nombre_usuario": "Daniela Valentina",
+        "estado": True,
+        "is_active": True,
+        "is_staff": True,
+        "id_rol_fk": 2
+    }
+
+    response = requests.post(base_url, json=nuevo_cliente)
+
+    if response.status_code != 201:
+        print("Error al registrar el cliente:")
+        print("Código de estado:", response.status_code)
+        print("Contenido de la respuesta:", response.content.decode("utf-8"))
+    assert response.status_code == 201
