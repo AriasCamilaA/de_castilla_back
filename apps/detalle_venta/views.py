@@ -54,15 +54,14 @@ def generate_pdf(request, id_venta=None):
             elements.append(Spacer(1, 36))
            
             # Crear una tabla para la información del cliente
-            table_data = [
-                ["Informacion del Cliente"],
+            table_data_vendedor = [
+                ["Información del Vendedor"],
                 ["N° Venta:", f"{venta.id_venta}"],
                 ["Nombre:", f"{venta.no_documento_usuario_fk.nombre_usuario} {venta.no_documento_usuario_fk.apellido_usuario}"],
                 ["Celular:", f"{venta.no_documento_usuario_fk.celular_usuario}"]
             ]
-            
-            table = Table(table_data, colWidths=[100, '*'])
-            table.setStyle(TableStyle([
+            table_vendedor = Table(table_data_vendedor, colWidths=[100, '*'])
+            table_vendedor.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#8C274C')),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
                 ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
@@ -70,7 +69,31 @@ def generate_pdf(request, id_venta=None):
                 ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
                 ('TOPPADDING', (0, 0), (-1, -1), 12),
             ]))
-            elements.append(table)
+            elements.append(table_vendedor)
+
+            # Agregar espacio entre la información del vendedor y la información del comprador si hay datos del comprador
+            if venta.id_cliente is not None and venta.nombre_cliente:
+                elements.append(Spacer(1, 36))
+
+                # Crear una tabla para la información del comprador
+                info_comprador_data = [
+                    ["Información del Comprador"],
+                    ["ID Cliente:", f"{venta.id_cliente}"],
+                    ["Nombre Cliente:", f"{venta.nombre_cliente}"]
+                ]
+                table_comprador = Table(info_comprador_data, colWidths=[100, '*'])
+                table_comprador.setStyle(TableStyle([
+                    ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#8C274C')),
+                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                    ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                    ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
+                    ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
+                    ('TOPPADDING', (0, 0), (-1, -1), 12),
+                ]))
+                elements.append(table_comprador)
+
+            # Agregar espacio entre la información del comprador y los detalles de la venta
+            elements.append(Spacer(1, 36))
 
             # Crear una tabla para los detalles de la venta
             detalles_data = [

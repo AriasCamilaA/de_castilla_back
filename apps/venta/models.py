@@ -10,6 +10,8 @@ class Venta(models.Model):
     id_pedido_fk = models.ForeignKey(Pedido, db_column='id_pedido_fk', on_delete=models.CASCADE, null=True, blank=True)
     no_documento_usuario_fk = models.ForeignKey(Usuario, db_column='no_documento_usuario_fk', on_delete=models.CASCADE, null=True, blank=True)
     estado = models.BooleanField(default=True)
+    id_cliente = models.IntegerField(blank=True, null=True)
+    nombre_cliente = models.TextField(blank=True, null=True)
 
     class Meta:
         db_table = 'venta'
