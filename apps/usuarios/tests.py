@@ -3,7 +3,7 @@ import requests
 
 @pytest.fixture
 def api_url():
-    return "http://127.0.0.1:8000/castilla/api/login/"
+    return "http://de-castilla-back.onrender.com/castilla/api/login/"
 
 def test_login(api_url):
     login_data = {
@@ -23,7 +23,7 @@ def test_password_reset():
         "email": "Romero_Morales@example.com"
     }
 
-    response = requests.post("http://127.0.0.1:8000/castilla/api/password_reset/", json=data)
+    response = requests.post("http://de-castilla-back.onrender.com/castilla/api/password_reset/", json=data)
 
     assert response.status_code == 200
 
@@ -38,7 +38,7 @@ def test_validacion_informacion_formulario():
         "email": "correo_invalido"
     }
 
-    response = requests.post("http://127.0.0.1:8000/castilla/api/usuarios/", json=cliente_invalido)
+    response = requests.post("http://de-castilla-back.onrender.com/castilla/api/usuarios/", json=cliente_invalido)
 
     assert response.status_code == 400
 
@@ -48,15 +48,15 @@ def test_validacion_informacion_formulario():
     assert "no_documento_usuario" in response_data
 
 
-base_url = 'http://127.0.0.1:8000/castilla/api/usuarios/'
+base_url = 'http://de-castilla-back.onrender.com/castilla/api/usuarios/'
 
 def test_registro_cliente():
     nuevo_cliente = {
-        "no_documento_usuario": 78484211,
+        "no_documento_usuario": 2138172,
         "password": "1234AD*21398+3",
         "apellido_usuario": "Rivas Palacios",
         "celular_usuario": 9012345682,
-        "email": "CarolinePasos@example.com",
+        "email": "asPalacios@example.com",
         "nombre_usuario": "Daniela Valentina",
         "estado": True,
         "is_active": True,
@@ -70,4 +70,5 @@ def test_registro_cliente():
         print("Error al registrar el cliente:")
         print("Código de estado:", response.status_code)
         print("Contenido de la respuesta:", response.content.decode("utf-8"))
+    
     assert response.status_code == 201
