@@ -22,7 +22,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.conf import settings
 from django.conf.urls.static import static
-from django_rest_passwordreset.views import reset_password_request_token, reset_password_confirm
+# from django_rest_passwordreset.views import reset_password_request_token, reset_password_confirm
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -64,5 +64,5 @@ urlpatterns = [
     path('castilla/api/', include('apps.tipo_movimiento.api.router')),
     path('castilla/api/', include('apps.usuarios.api.router')),
     path('castilla/api/', include('apps.venta.api.router')),
-    path('castilla/api/password_reset/', reset_password_request_token, name='password_reset'),
+    # path('castilla/api/password_reset/', reset_password_request_token, name='password_reset'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
