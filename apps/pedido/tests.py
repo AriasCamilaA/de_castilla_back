@@ -124,19 +124,82 @@ def test_agregar_observaciones_al_crear_pedido():
     pedido_creado = response.json()
     assert pedido_creado["descripcion_pedido"] == observaciones
 
-def test_calificar_pedido():
-    # Datos del pedido a finalizar
-    pedido_data = {
-        "id_pedido": 21,
-        "calificacion_pedido": 5
+def test_cambiar_estado_pedido():
+    # Datos de ejemplo para el cambio de estado del pedido
+    cambio_estado_data = {
+        "id_pedido": 1,
+        "estado_pedido": {
+            "id_estado_pedido": 3,
+            "nombre_estado": "En Proceso",
+            "estado": True
+        },
+        "usuario": {
+            "no_documento_usuario": 7890123456,
+            "rol": {
+                "id_rol": 2,
+                "nombre_rol": "Usuario",
+                "estado": True
+            },
+            "password": "pbkdf2_sha256$720000$LwA8aP8OHOvRqWGnJKqzZZ$tNdX7A74LyzxiNO+4YSv3IAjsdBGEC3M3KwHJ7U0qgU=",
+            "last_login": None,
+            "is_superuser": True,
+            "apellido_usuario": "Perez Torres",
+            "celular_usuario": 7890123456,
+            "email": "Perez_Torres@example.com",
+            "nombre_usuario": "Valentina Alejandra",
+            "estado": True,
+            "is_active": True,
+            "is_staff": True,
+            "id_rol_fk": 2,
+            "groups": [],
+            "user_permissions": []
+        },
+        "descripcion_pedido": "Sin descripción",
+        "fecha_pedido": "2023-06-12",
+        "fecha_fin_pedido": "2024-03-17",
+        "calificacion_pedido": None,
+        "estado": True,
+        "id_estado_pedido_fk": 5,
+        "no_Documento_Usuario_fk": 7890123456
     }
 
-    # Realizar la solicitud para finalizar el pedido y proporcionar una calificación
-    response = requests.put(BASE_URL + str(pedido_data["id_pedido"]) + "/", json=pedido_data)
+    # Realizar la petición PUT para cambiar el estado del pedido
+    response = requests.put(BASE_URL + "1/", json=cambio_estado_data)
 
-    # Verificar que la solicitud se haya realizado con éxito (código de estado 200)
+    # Verificar si la petición fue exitosa (código de respuesta 200)
     assert response.status_code == 200
 
-    # Verificar que el sistema haya registrado la calificación del pedido correctamente
+    # Verificar que el estado del pedido ha sido cambiado correctamente
     pedido_actualizado = response.json()
-    assert pedido_actualizado["calificacion_pedido"] == pedido_data["calificacion_pedido"]
+    assert pedido_actualizado["estado_pedido"]["nombre_estado"] == "Cancelado"
+
+def test_obtener_pedido():
+    response = requests.get(BASE_URL)
+    print(response.json())  # Imprime la respuesta para ver su estructura
+    assert response.status_code == 200  # Verificar que la solicitud sea exitosa
+    pedidos = response.json()
+    assert isinstance(pedidos, list)  # Verificar que la respuesta sea una lista
+
+    # Asegúrate de que haya al menos un pedido en la lista
+    assert len(pedidos) > 0
+
+    # Tomamos el primer pedido de la lista
+    primer_pedido = pedidos[0]
+    assert isinstance(primer_pedido, dict)  # Verificar que el primer pedido sea un diccionario
+
+    # Verificar que el pedido tenga las claves esperadas
+    expected_keys = ["id_pedido", "estado_pedido", "usuario", "descripcion_pedido",
+                     "fecha_pedido", "fecha_fin_pedido", "calificacion_pedido",
+                     "estado", "id_estado_pedido_fk", "no_Documento_Usuario_fk"]
+    for key in expected_keys:
+        assert key in primer_pedido.keys()
+
+    # Verificar que el estado del primer pedido sea "Finalizado"
+    assert primer_pedido["estado_pedido"]["nombre_estado"] == "Finalizados"
+
+    # Verificar que el usuario asociado al primer pedido tenga cierta información
+    usuario = primer_pedido["usuario"]
+    assert isinstance(usuario, dict)
+    assert "nombre_usuario" in usuario.keys()
+    assert "apellido_usuario" in usuario.keys()
+    assert "email" in usuario.keys()
